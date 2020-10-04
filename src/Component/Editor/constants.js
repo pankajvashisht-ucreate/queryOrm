@@ -1,0 +1,1 @@
+export const editorThemes = ['monokai', 'midnight', 'material', 'neat'];
