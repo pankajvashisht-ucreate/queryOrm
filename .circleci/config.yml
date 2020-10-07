@@ -1,0 +1,30 @@
+version: 2
+notify:
+  webhooks:
+    # A list of hashes representing hooks. Only the url field is supported.
+    - url: https://production-reviewee-api.herokuapp.com/notification/ci
+jobs:
+  build:
+    working_directory: ~/codesandbox
+    docker:
+      - image: circleci/node:11.14.0
+    environment:
+      - REVIEWEE_URL: https://api.reviewee.it
+      - COMMITS_CHECK_ENDPOINT: repository/codesandbox/haveRejectedCommits
+      - COMMITS_CHECK_INDICATOR: \"success\":true
+    steps:
+      - run:
+          name: Check rejected commits
+          command: ls
+      - checkout
+      - run:
+          name: Install System Dependencies
+          command: |
+            sudo apt-get update && sudo apt-get -f install && sudo apt-get install wget
+      - run:
+          name: Install Node dependencies
+          command: |
+            npm install
+      - run:
+          name: Heroku Staging Deploy
+          command: git push --force https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD:refs/heads/master
